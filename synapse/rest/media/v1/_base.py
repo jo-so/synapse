@@ -232,7 +232,8 @@ async def respond_with_responder(
         # The majority of the time this will be due to the client having gone
         # away. Unfortunately, Twisted simply throws a generic exception at us
         # in that case.
-        logger.warning("Failed to write to consumer: %s %s", type(e), e)
+        if str(e) != "Consumer asked us to stop producing":
+            logger.warning("Failed to write to consumer: %s %s", type(e), e)
 
         # Unregister the producer, if it has one, so Twisted doesn't complain
         if request.producer:
