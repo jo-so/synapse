@@ -989,12 +989,13 @@ class MatrixFederationHttpClient:
             d.addTimeout(self.default_timeout, self.reactor)
             length = await make_deferred_yieldable(d)
         except Exception as e:
-            logger.warning(
-                "{%s} [%s] Error reading response: %s",
-                request.txn_id,
-                request.destination,
-                e,
-            )
+            if not (isinstance(e, SynapseError) and e.errcode == Codes.TOO_LARGE):
+                logger.warning(
+                    "{%s} [%s] Error reading response: %s",
+                    request.txn_id,
+                    request.destination,
+                    e,
+                )
             raise
         logger.info(
             "{%s} [%s] Completed: %d %s [%d bytes] %s %s",

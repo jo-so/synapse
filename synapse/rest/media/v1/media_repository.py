@@ -26,6 +26,7 @@ from twisted.web.http import Request
 from twisted.web.resource import Resource
 
 from synapse.api.errors import (
+    Codes,
     FederationDeniedError,
     HttpResponseException,
     NotFoundError,
@@ -405,9 +406,10 @@ class MediaRepository:
                 raise SynapseError(502, "Failed to fetch remote media")
 
             except SynapseError:
-                logger.warning(
-                    "Failed to fetch remote media %s/%s", server_name, media_id
-                )
+                if e.errcode != Codes.TOO_LARGE:
+                    logger.warning(
+                        "Failed to fetch remote media %s/%s", server_name, media_id
+                    )
                 raise
             except NotRetryingDestination:
                 logger.warning("Not retrying destination %r", server_name)
