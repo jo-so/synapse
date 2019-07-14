@@ -309,7 +309,8 @@ class BaseFederationServlet:
                     )
                     raise
             except Exception as e:
-                logger.warning("authenticate_request failed: %s", e)
+                if not (isinstance(e, SynapseError) and e.errcode == Codes.UNAUTHORIZED):
+                    logger.warning("authenticate_request failed: %s", e)
                 raise
 
             request_tags = {
